@@ -1,5 +1,5 @@
 import  os
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, url_for, render_template, send_from_directory, session
 from werkzeug.utils import secure_filename
 import logging
 
@@ -41,7 +41,8 @@ def demo():
 
     :return:
     '''
-    return render_template('uploader.html')
+    return render_template('uploader.html', volume_file='Brats18_CBICA_ASH_1_t1.nii.gz',
+                           seg_file='Brats18_CBICA_ASH_1_seg.nii.gz')
 
 @app.route('/uploads/')
 def uploaded_file():
@@ -52,7 +53,22 @@ def uploaded_file():
 
     :return:
     '''
-    return "Successful Upload!"
+
+    volume_file = session['volume_file']
+
+    if session['seg_file'] != None:
+        return render_template('uploader.html', volume_file=volume_file, seg_file=session['seg_file'])
+    else:
+        return render_template('uploader.html', volume_file=volume_file, seg_file='null')
+
+@app.route('/uploads/<filename>')
+def send_file_upload(filename):
+    return send_from_directory('./upload/', filename)
+
+
+@app.route('/<filename>')
+def send_file(filename):
+    return send_from_directory('./samples/', filename)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -81,6 +97,11 @@ def upload_file():
         t2flair_file = request.files['t2flair']
         t1ce_file = request.files['t1ce']
 
+        if 'seg' in request.files:
+            seg_file = request.files['seg']
+        else:
+            seg_file = None
+
         if t1_file.filename == '' or \
                 t2_file.filename == '' or \
                 t1ce_file.filename == '' or \
@@ -108,13 +129,25 @@ def upload_file():
             t2flair_filename = secure_filename(t2flair_file.filename)
             t2flair_file.save(os.path.join(app.config['UPLOAD_FOLDER'], t2flair_filename))
 
-            return redirect(url_for('uploaded_file'))
+            if seg_file != None:
+                seg_filename = secure_filename(seg_file.filename)
+                seg_file.save(os.path.join(app.config['UPLOAD_FOLDER'], seg_filename))
+                session['seg_file'] = seg_filename
+            else:
+                session['seg_file'] = None
+
+            session['volume_file'] = t2_filename
+
+            if session['seg_file'] != None:
+                return redirect(url_for('uploaded_file', volume_file=t1ce_filename, seg_file=seg_filename))
+            else:
+                return redirect(url_for('uploaded_file', volume_file=t1ce_filename))
 
     return render_template('index.html')
 
 if __name__ == '__main__':
     logger.debug('Cleaning data directory..')
-    clean_jpeg_dir()
+    # clean_jpeg_dir()
     logger.debug('Data directory empty')
     import platform
 

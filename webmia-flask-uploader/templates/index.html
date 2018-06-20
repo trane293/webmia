@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styles.css') }}">
+<script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+<body>
+<h1> Brain Tumor Segmentation Web Demo</h1>
+<form method="post" enctype="multipart/form-data">
+    <h4>Select files to upload</h4>
+    <div class="file-upload">
+    <div class="file-select">
+      <div class="file-select-button">Choose T1 File</div>
+      <div class="file-select-name" id="fileToUpload1noFile">No file chosen...</div>
+      <input type="file" name="t1" id="t1">
+      </div>
+    </div>
+    <div class="file-upload">
+    <div class="file-select">
+      <div class="file-select-button">Choose T2 File</div>
+      <div class="file-select-name" id="fileToUpload2noFile">No file chosen...</div>
+      <input type="file" name="t2" id="t2">
+      </div>
+    </div>
+    <div class="file-upload">
+    <div class="file-select">
+      <div class="file-select-button">Choose T1ce File</div>
+      <div class="file-select-name" id="fileToUpload3noFile">No file chosen...</div>
+      <input type="file" name="t1ce" id="t1ce">
+      </div>
+    </div>
+  <div class="file-upload">
+  <div class="file-select">
+    <div class="file-select-button">Choose T2Flair File</div>
+    <div class="file-select-name" id="fileToUpload4noFile">No file chosen...</div>
+    <input type="file" name="t2flair" id="t2flair">
+    </div>
+  </div>
+    <input type="submit" value="Upload Files" name="submit">
+</form>
+<form action="/demo" method="post">
+        <input type="submit" value="Show Demo" name="demo1" >
+</form>
+
+<script>
+var file1 = document.getElementById(`t1ce`);
+file1.onchange = function(){
+    if(file1.files.length > 0)
+    {
+
+      document.getElementById(`fileToUpload3noFile`).innerHTML = file1.files[0].name;
+
+    }
+};
+var file2 = document.getElementById(`t2`);
+file2.onchange = function(){
+    if(file2.files.length > 0)
+    {
+
+      document.getElementById(`fileToUpload2noFile`).innerHTML = file2.files[0].name;
+
+    }
+};
+var file3 = document.getElementById(`t1`);
+file3.onchange = function(){
+    if(file3.files.length > 0)
+    {
+
+      document.getElementById(`fileToUpload1noFile`).innerHTML = file3.files[0].name;
+
+    }
+};
+var file4 = document.getElementById(`t2flair`);
+file4.onchange = function(){
+    if(file4.files.length > 0)
+    {
+
+      document.getElementById(`fileToUpload4noFile`).innerHTML = file4.files[0].name;
+
+    }
+};
+
+
+
+</script>
+
+</body>
+</html>
